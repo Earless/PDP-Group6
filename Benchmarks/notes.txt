@@ -1,0 +1,17 @@
+-----------------------
+-	SSEARCH	      -
+-----------------------
+- A lot of memory needed (store strings)
+- Preferably big cache (repetitive pattern; if the pattern can't be stored in the cache completely, a lot of memory transfers are needed)
+- 2 reasonably big for-loops
+- Quite a lot of while-loops and if/else-statements
+- Lot of function calls
+
+-----------------------
+-	 SUSAN	      -
+-----------------------
+- So, so many pointers
+- Lot of for-loops
+- Quite some if/else-statements (few super big ones, i.e., line 1673 - 1727)
+- Lot of multiplications
+- Should benefit quite a bit of faster ALU
