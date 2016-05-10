@@ -51,8 +51,7 @@ architecture logic of cache is
    signal cache_tag_in     : std_logic_vector(8 downto 0);
    signal cache_tag_reg    : std_logic_vector(8 downto 0);
    signal cache_tag_out    : std_logic_vector(8 downto 0);
-   signal cache_we         : std_logic;
-   
+	signal cache_we         : std_logic;
 begin
 
    cache_proc: process(clk, reset, mem_busy, cache_address, 
@@ -99,7 +98,7 @@ begin
       end case; --state
 
       if state = STATE_IDLE then    --check if next access in cached range
-         cache_address <= address_next(12 downto 2); -- Was: '0' & 11 downto 2
+         cache_address <= address_next(12 downto 2);
          if address_next(30 downto 21) = "0010000000" then  --first 2MB of DDR
             cache_access <= '1';
             if byte_we_next = "0000" then     --read cycle
@@ -115,7 +114,7 @@ begin
             state_next <= STATE_IDLE;
          end if;
       else
-         cache_address <= cpu_address(12 downto 2); -- Was: '0' & 11 downto 2
+         cache_address <=  cpu_address(12 downto 2);
          cache_access <= '0';
          if state = STATE_MISSED then
             cache_we <= '1';                  --update cache tag
@@ -126,11 +125,9 @@ begin
       end if;
 
       if byte_we_next = "0000" or byte_we_next = "1111" then  --read or 32-bit write
-         cache_tag_in <= address_next(20 downto 12); --20-13 --20-12
-			--cache_tag_zero <= ZERO(0 downto 0);
+         cache_tag_in <= '0' & address_next(20 downto 13); -- for 16 KB
       else
-         cache_tag_in <= ONES(8 downto 0); --invalid tag
-			--cache_tag_zero <= ONES(0 downto 0);
+         cache_tag_in <= ONES(8 downto 0);  --invalid tag
       end if;
 
       if reset = '1' then
@@ -235,17 +232,17 @@ begin
         INITP_07 => X"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
     port map (
          DO   => cache_tag_out(7 downto 0),
-         DOP  => cache_tag_out(8 downto 8), --cache_tag_zero_o(0 downto 0)
+         DOP  => cache_tag_out(8 downto 8), 
          ADDR => cache_address,             --registered
          CLK  => clk, 
          DI   => cache_tag_in(7 downto 0),  --registered
-         DIP  => cache_tag_in(8 downto 8), --cache_tag_zero(0 downto 0)
+         DIP  => cache_tag_in(8 downto 8),
          EN   => '1',
          SSR  => ZERO(0),
          WE   => cache_we);
 		 
 	cache_data: cache_ram     -- cache data storage
-	generic map (block_count => 2) -- set block_count to 2 (for 16 KB)
+	generic map (block_count => 2) -- for 16 KB
 	port map (
          clk               => clk,
          enable            => cache_ram_enable,
@@ -255,3 +252,4 @@ begin
          data_read         => cache_ram_data_r);
 
 end; --logic
+
