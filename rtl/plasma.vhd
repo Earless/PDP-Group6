@@ -40,7 +40,7 @@ entity plasma is
    generic(log_file    : string := "UNUSED";
            use_cache   : std_logic := '0');
    port(clk          : in std_logic;
-		    reset        : in std_logic;
+		  reset        : in std_logic;
 
         uart_write   : out std_logic;
         uart_read    : in std_logic;
@@ -246,12 +246,12 @@ begin  --architecture
       if cache_access = '1' then    --Check if cache hit or write through
          cache_ram_enable <= '1';
          cache_ram_byte_we <= byte_we_next;
-         cache_ram_address(31 downto 2) <= ZERO(31 downto 13) & address_next(12 downto 2);
+         cache_ram_address(31 downto 2) <= ZERO(31 downto 14) & address_next(13 downto 2);
          cache_ram_data_w <= cpu_data_w;
       elsif cache_miss = '1' then  --Update cache after cache miss
          cache_ram_enable <= '1';
          cache_ram_byte_we <= "1111";
-         cache_ram_address(31 downto 2) <= ZERO(31 downto 13) & address_next(12 downto 2);
+         cache_ram_address(31 downto 2) <= ZERO(31 downto 14) & address_next(13 downto 2);
          cache_ram_data_w <= data_read;
       else                         --Disable cache ram when Normal non-cache access
          cache_ram_enable <= '0';
@@ -261,7 +261,7 @@ begin  --architecture
       end if;
    end process;
 
-   boot_ram_enable <= '1' when address_next(30 downto 28) = "000" else '0';  -- read/write to boot mem
+   boot_ram_enable <= '1' when address_next(30 downto 28) = "000" else '0';  -- read/wirte to boot mem
    boot_ram_byte_we <= byte_we_next;
    boot_ram_address(31 downto 2) <= address_next(31 downto 2);
    boot_ram_data_w <= cpu_data_w;
