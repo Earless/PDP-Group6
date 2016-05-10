@@ -125,7 +125,7 @@ begin
       end if;
 
       if byte_we_next = "0000" or byte_we_next = "1111" then  --read or 32-bit write
-         cache_tag_in <= '0' & address_next(20 downto 13);
+         cache_tag_in <= '0' & address_next(20 downto 13); -- for 16 KB
       else
          cache_tag_in <= ONES(8 downto 0);  --invalid tag
       end if;
@@ -242,7 +242,7 @@ begin
          WE   => cache_we);
 		 
 	cache_data: cache_ram     -- cache data storage
-	generic map (block_count => 2)
+	generic map (block_count => 2) -- for 16 KB
 	port map (
          clk               => clk,
          enable            => cache_ram_enable,
