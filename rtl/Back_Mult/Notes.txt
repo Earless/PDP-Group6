@@ -1,0 +1,2 @@
+Need to lower the clock freq to 37.5 might not be worth it don't forget to change uart when you change clock
+But if you delete bv_ stuff it still works at 39.58
