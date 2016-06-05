@@ -1,2 +1,5 @@
 Need to lower the clock freq to 37.5 might not be worth it don't forget to change uart when you change clock
 But if you delete bv_ stuff it still works at 39.58
+In order to make division work at 39.58 you have to store b2 and b3 before hand
+If you use skip 4 0s you need to slow down the clock to 37.5 also if you use it in radix 4 subtract 2 rather than 4 (Somehow
+it worked at 39.58 but it is risky)
