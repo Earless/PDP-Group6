@@ -69,7 +69,7 @@ architecture logic of cache is
 	signal lrus					: lru_vector(1024 downto 0) := (others => (others => '0'));
    signal lru					: std_logic_vector(0 downto 0);
 	signal done					: std_logic := '0';
-	signal address_buffer	: std_logic_vector(29 downto 0);
+	signal address_buffer	: std_logic_vector(29 downto 0) := "00" & x"4000000";--:= (others => '0');
 	
 begin
 	
@@ -117,8 +117,14 @@ begin
          if mem_busy = '1' then
             state <= STATE_WAITING;
          else
+--				if done = '0' then
+--						lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
+--						address_buffer <= address_next;
+--				end if;
 				if address_buffer /= address_next then
 					done <= '0';
+					lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
+					address_buffer <= address_next;
 				end if;
             state <= STATE_IDLE;
          end if;
@@ -136,13 +142,9 @@ begin
                cache_we <= "00";
                state_next <= STATE_CHECKING;  --need to check if match
             else
-               cache_we(conv_integer(not lrus(conv_integer(address_next(12 downto 2))))) <= '1';               --update cache tag
-					cache_we(conv_integer(lrus(conv_integer(address_next(12 downto 2))))) <= '0';
-					if done = '0' then
-						lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
-						done <= '1';
-						address_buffer <= address_next;
-					end if;
+               cache_we(conv_integer(lrus(conv_integer(address_next(12 downto 2))))) <= '1';               --update cache tag
+					cache_we(conv_integer(not lrus(conv_integer(address_next(12 downto 2))))) <= '0';
+					done <= '1';
 					state_next <= STATE_WAITING;
             end if;
          else
@@ -154,13 +156,14 @@ begin
          cache_address <= cpu_address(12 downto 2); -- Was: '0' & 11 downto 2
          cache_access <= '0';
          if state = STATE_MISSED then
-            cache_we(conv_integer(not lrus(conv_integer(cpu_address(12 downto 2))))) <= '1';               --update cache tag
-				cache_we(conv_integer(lrus(conv_integer(cpu_address(12 downto 2))))) <= '0';                  --update cache tag
-				if  done = '0' then
-					lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
-					done <= '1';
-					address_buffer <= address_next;
-				end if;
+            cache_we(conv_integer(lrus(conv_integer(cpu_address(12 downto 2))))) <= '1';               --update cache tag
+				cache_we(conv_integer(not lrus(conv_integer(cpu_address(12 downto 2))))) <= '0';                  --update cache tag
+				done <= '1';
+--				if  done = '0' then
+--					lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
+--					done <= '1';
+--					address_buffer <= address_next;
+--				end if;
 			else
             cache_we <= "00";
          end if;
