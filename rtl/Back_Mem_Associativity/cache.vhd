@@ -121,11 +121,14 @@ begin
 --						lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
 --						address_buffer <= address_next;
 --				end if;
-				if address_buffer /= address_next then
+--				if address_buffer /= address_next then
+				if done = '1' then
+					lrus(conv_integer(cpu_address(12 downto 2))) <= not lrus(conv_integer(cpu_address(12 downto 2)));
 					done <= '0';
-					lrus(conv_integer(address_next(12 downto 2))) <= not lrus(conv_integer(address_next(12 downto 2)));
-					address_buffer <= address_next;
 				end if;
+--					lrus(conv_integer(cpu_address(12 downto 2))) <= not lrus(conv_integer(cpu_address(12 downto 2)));
+--					address_buffer <= address_next;
+--				end if;
             state <= STATE_IDLE;
          end if;
       when others =>
